@@ -27,6 +27,17 @@ class ProductScopeTests(unittest.TestCase):
     def test_build_workflow_publishes_only_the_laptop_image(self):
         workflow = (ROOT / ".github/workflows/build.yml").read_text()
         self.assertNotIn("headscale", workflow.lower())
+
+    def test_build_workflow_uses_the_multifacility_image_package(self):
+        workflow = (ROOT / ".github/workflows/build.yml").read_text()
+        self.assertIn(
+            "IMAGE: ghcr.io/${{ github.repository_owner }}/agent-in-a-box-multifacility",
+            workflow,
+        )
+        self.assertNotIn(
+            "IMAGE: ghcr.io/${{ github.repository_owner }}/alcf-agent",
+            workflow,
+        )
         self.assertNotIn("red-shirt", workflow.lower())
         self.assertEqual(workflow.count("docker/build-push-action@"), 1)
 
